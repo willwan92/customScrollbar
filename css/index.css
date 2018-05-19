@@ -1,0 +1,77 @@
+body {
+			background-color: #ccc;
+		}
+
+		/* demo容器 */
+		.scroll-demo {
+			margin: 50px auto;
+			width: 600px;
+			border: 1px solid #e5e5e5;
+			background-color: #fff;
+		}
+
+		/* 标签切换区 */
+		.tabs {
+			height: 34px;
+			border-bottom: 1px solid #e5e5e5;
+			background-color: #f8f8f8;
+			color: #666;
+		}
+		.tab-item {
+			float: left;
+			height: 34px;
+			font: 14px/34px "Microsoft Yahei";
+			border-right: 1px solid #e5e5e5;
+			padding: 0 20px;
+			cursor: pointer;
+		}
+		.tab-active {
+			margin: -1px 0;
+			background-color: #fff;
+			border-top: 2px solid green;
+			color: green;
+		}
+
+		/* 滚动内容区 */
+		.scroll-wrap {
+			position: relative;
+			width: 100%;
+			height: 360px;
+		}
+		.scroll-wrap .scroll-cont {
+			margin-right: 15px;
+			height: 100%;
+			padding: 0 15px;
+			overflow: hidden; /*该样式必须设置在滚动内容的直接父元素上，否则设置scrollTop时无效*/
+		}
+		.scroll-cont .section-title {
+			text-align: center;
+			line-height: 3em;
+		}
+		.scroll-cont .section-cont {
+			line-height: 1.5em;
+			text-indent: 2em;
+		}
+		.scroll-cont .section-cont p {
+			margin-bottom: 15px;
+		}
+
+		/* 滚动条区 */
+		.scroll-bar {
+			position: absolute;
+			top: 0;
+			right: 0;
+			width: 15px;
+			height: 100%;
+			background-color: #eee;
+		}
+		.scroll-bar .scroll-slider {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 50px;
+			background-color: #aaa;
+			border-radius: 5px;
+			cursor: pointer;
+		}
