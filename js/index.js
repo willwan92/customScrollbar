@@ -26,15 +26,17 @@
 				tabItemSelector: ".tab-item",
 				tabActiveClass : 'tab-active',
 				anchorSelector : '.section-title',
+				sectionSelector: '.section-cont',
 				wheelStep      : 20
-			}
+			};
 
 			$.extend(true, this.options, options || {});
 
 			this._getDom();
 			this._bindDragSliderEvent()
-				._bindMouseWheel().
-				_bindTabChange();
+				._bindMouseWheel()
+				._bindTabChange()
+				.correctSectionHeight();
 
 			return this;
 		},
@@ -50,6 +52,8 @@
 			this.$bar = opts.barSelector ? $(opts.barSelector) : this.$slider.parent();
 			this.$tabItem = $(opts.tabItemSelector);
 			this.$anchor = $(opts.anchorSelector);
+			this.$sectionCont = $(opts.sectionSelector);
+
 		},
 		getContMaxScrollHeight : function () {
 			var self = this;
@@ -70,11 +74,31 @@
 
 			// 根据内容滚动的高度和相应比率设置滑块的位置 
 			// 用scrollTop()而不用contScrollPosition防止取到负值
-			var sliderPositionVal = self.$cont.scrollTop() / self.getContMaxScrollHeight() * self.getSliderMaxMoveHeight();
+			var contScrollTop = self.$cont.scrollTop();
+			var sliderPositionVal = contScrollTop / self.getContMaxScrollHeight() * self.getSliderMaxMoveHeight();
 			var sliderTop = Math.min(self.getSliderMaxMoveHeight(), sliderPositionVal);
 			self.$slider.css({
 				top: sliderTop + 'px'
 			});
+
+			// 选中对应的tab
+			var len = self.$anchor.length,
+				index,
+				anchorPositionArr = [];
+			// 获取tab项对应的滚动高度节点
+			for (var i = 0; i < len; i++){
+				anchorPositionArr.push(self.$cont.scrollTop() + self.$anchor.eq(i).position().top);
+			}
+			// 当前滚动高度对应的tab项索引
+			for (var j = len; j >= 0; j--){
+				if (contScrollTop >= anchorPositionArr[j]){
+					index = j;
+					break;
+				}
+			}
+			// 切换切换至对应的tab项
+			self.changeSelectedTab(index);
+			
 		},
 		_bindDragSliderEvent : function () {
 			var self = this,
@@ -134,6 +158,7 @@
 					wheelRange = oEv.wheelDelta ? -oEv.wheelDelta/120 : (eEV.detail || 0)/3;
 
 					self.scrollTo(self.$cont.scrollTop() + wheelRange * self.options.wheelStep);
+
 			});
 
 			return self;
@@ -145,7 +170,7 @@
 			self.$tabItem.eq(index).addClass(active).siblings().removeClass(active);
 		},
 		getAnchorPosition : function (index) {
-			// positon()获取元素相对于最经的定位元素的位置
+			// positon()获取元素相对于最近的定位元素的位置
 			return this.$anchor.eq(index).position().top;
 		},
 		_bindTabChange : function () {
@@ -160,11 +185,24 @@
 				self.scrollTo(self.$cont.scrollTop() + self.getAnchorPosition(index));
 			});
 
-			
+			return self;
 		},
-		_bindScrollListen : function () {
+		correctSectionHeight : function () {
+			var self = this,
+				lastSection = self.$sectionCont.last();
 
+			var contHeight = self.$cont.height(),
+				sectionTitleHeight = self.$anchor.eq(0).outerHeight();
+				lastSectionHeight = lastSection.height() + sectionTitleHeight;
+
+			if (lastSectionHeight < contHeight){
+				var correctHeight = contHeight - lastSectionHeight;
+				lastSection.css({
+					paddingBottom: correctHeight + 'px'
+				});
+			}
 		}
+		
 
 	});
 
@@ -189,4 +227,3 @@ var scrollBar = new CusScrollBar({
 	barSelector    : ".scroll-bar",
 	sliderSelector : ".scroll-slider"
 });
-console.log(scrollBar);
